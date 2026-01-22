@@ -1,7 +1,10 @@
 //src/components/layout/Sidebar.tsx
+
 'use client'
 
-import { Box, Button, HStack, Icon, Text, VStack } from '@chakra-ui/react'
+import NextLink from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Box, HStack, Icon, Text, VStack, Link } from '@chakra-ui/react'
 import {
   FiHome,
   FiMusic,
@@ -22,6 +25,8 @@ const NAV = [
 ]
 
 export function Sidebar() {
+  const pathname = usePathname()
+
   return (
     <Box
       w={{ base: '72px', md: '260px' }}
@@ -44,35 +49,46 @@ export function Sidebar() {
       </HStack>
 
       <VStack align="stretch" gap={1}>
-        {NAV.map((item) => (
-          <Button
-            key={item.label}
-            justifyContent={{ base: 'center', md: 'flex-start' }}
-            variant="ghost"
-            colorScheme="whiteAlpha"
-            borderRadius="12px"
-          >
-            <HStack gap={3}>
-              <Icon as={item.icon} />
-              <Text display={{ base: 'none', md: 'block' }}>{item.label}</Text>
-            </HStack>
-          </Button>
-        ))}
+        {NAV.map((item) => {
+          const active = pathname === item.href
+
+          return (
+            <Link
+              key={item.label}
+              as={NextLink}
+              href={item.href}
+              _hover={{ textDecoration: 'none' }}
+            >
+              <HStack
+                px={3}
+                py={2.5}
+                borderRadius="12px"
+                justify={{ base: 'center', md: 'flex-start' }}
+                bg={active ? 'whiteAlpha.100' : 'transparent'}
+                _hover={{ bg: 'whiteAlpha.100' }}
+                transition="background 0.15s ease"
+              >
+                <Icon as={item.icon} />
+                <Text display={{ base: 'none', md: 'block' }}>{item.label}</Text>
+              </HStack>
+            </Link>
+          )
+        })}
       </VStack>
 
       <Box mt="auto" pt={8}>
-        <Button
-          w="full"
-          justifyContent={{ base: 'center', md: 'flex-start' }}
-          variant="ghost"
-          colorScheme="whiteAlpha"
-          borderRadius="12px"
-        >
-          <HStack gap={3}>
+        <Link as={NextLink} href="/settings" _hover={{ textDecoration: 'none' }}>
+          <HStack
+            px={3}
+            py={2.5}
+            borderRadius="12px"
+            justify={{ base: 'center', md: 'flex-start' }}
+            _hover={{ bg: 'whiteAlpha.100' }}
+          >
             <Icon as={FiSettings} />
             <Text display={{ base: 'none', md: 'block' }}>Settings</Text>
           </HStack>
-        </Button>
+        </Link>
       </Box>
     </Box>
   )
