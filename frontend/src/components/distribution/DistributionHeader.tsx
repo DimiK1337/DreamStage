@@ -17,13 +17,6 @@ export function DistributionHeader({
   return (
     <HStack mb={4} align="start">
       <VStack align="start" gap={0}>
-        <Text fontSize="xl" fontWeight="800">
-          Distribution
-        </Text>
-        <Text fontSize="sm" color="whiteAlpha.700">
-          Manage your releases across platforms
-        </Text>
-
         <HStack mt={3} gap={3}>
           <Button colorScheme="teal" borderRadius="14px">
             <Icon as={FiUploadCloud} mr={2} />
