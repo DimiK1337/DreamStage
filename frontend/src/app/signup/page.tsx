@@ -1,7 +1,9 @@
+//frontend/src/app/signup/page.tsx
 'use client'
 
 import { useState } from 'react'
 import { Box, Button, Heading, HStack, Input, Text, VStack } from '@chakra-ui/react'
+import { toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import type { UserRole } from '@/lib/auth/roles'
@@ -16,16 +18,25 @@ export default function SignupPage() {
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setSuccess(null)
     setLoading(true)
 
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            role,          // 'artist' | 'venue'
+            display_name: displayName,  // string
+          },
+        },
       })
       if (signUpError) throw signUpError
 
@@ -34,15 +45,21 @@ export default function SignupPage() {
         throw new Error('No user returned from Supabase signup.')
       }
 
-      // Create profile row (requires RLS policy; we’ll add in backend step)
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: userId,
-        role,
-        display_name: displayName || null,
-      })
-      if (profileError) throw profileError
-
+      // If email confirmations are ON, session is usually null and user must confirm via email.
+      if (!data.session) {
+        setSuccess('Check your email to confirm your account, then log in.')
+        toaster.create({
+          title: 'Confirm your email',
+          description: 'We sent you a confirmation link. Open your inbox to activate your account.',
+          type: 'info',
+          duration: 8000,
+          closable: true,
+        })
+        return
+      }
+      // If confirmations are OFF, you’ll have a session and can proceed.
       router.push('/dashboard')
+
     } catch (err: unknown) {
       setError(getErrorMessage(err))
     } finally {
@@ -124,6 +141,12 @@ export default function SignupPage() {
                   {error}
                 </Text>
               ) : null}
+              {success ? (
+                <Text color="green.300" fontSize="sm">
+                  {success}
+                </Text>
+              ) : null}
+
 
               <Button type="submit" colorScheme="teal" borderRadius="14px" loading={loading}>
                 Create account

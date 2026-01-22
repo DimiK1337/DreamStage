@@ -1,0 +1,10 @@
+{
+  "name": "dreamstage-supabase",
+  "private": true,
+  "scripts": {
+    "start": "supabase start",
+    "stop": "supabase stop",
+    "reset": "supabase db reset",
+    "push": "supabase db push"
+  }
+}

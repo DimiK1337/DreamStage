@@ -11,9 +11,31 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react'
-import { FiBell, FiPlus, FiSearch } from 'react-icons/fi'
+import { useRouter } from 'next/navigation'
+import { FiBell, FiLogOut, FiPlus, FiSearch } from 'react-icons/fi'
+import { supabase } from '@/lib/supabase/client'
+import { toaster } from '@/components/ui/toaster'
+import { getErrorMessage } from '@/lib/utils/errors'
 
 export function Topbar() {
+  const router = useRouter()
+
+  async function handleLogout() {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      router.push('/login')
+    } catch (err: unknown) {
+      toaster.create({
+        title: 'Logout failed',
+        description: getErrorMessage(err),
+        type: 'error',
+        duration: 6000,
+        closable: true,
+      })
+    }
+  }
+
   return (
     <HStack
       px={{ base: 4, md: 8 }}
@@ -36,10 +58,7 @@ export function Topbar() {
 
       <Spacer />
 
-      <InputGroup
-        maxW="420px"
-        display={{ base: 'none', md: 'block' }}
-      >
+      <InputGroup maxW="420px" display={{ base: 'none', md: 'block' }}>
         <>
           <InputElement pointerEvents="none">
             <Icon as={FiSearch} color="whiteAlpha.600" />
@@ -47,7 +66,7 @@ export function Topbar() {
 
           <Input
             placeholder="Search..."
-            ps="10"              // padding-start so text doesn't overlap the icon
+            ps="10"
             bg="whiteAlpha.50"
             borderColor="whiteAlpha.200"
             borderRadius="14px"
@@ -64,6 +83,16 @@ export function Topbar() {
       <Button colorScheme="teal" borderRadius="14px">
         <Icon as={FiPlus} mr={2} />
         New
+      </Button>
+
+      <Button
+        variant="outline"
+        borderRadius="14px"
+        borderColor="whiteAlpha.300"
+        onClick={handleLogout}
+      >
+        <Icon as={FiLogOut} mr={2} />
+        Log out
       </Button>
     </HStack>
   )

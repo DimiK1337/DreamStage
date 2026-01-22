@@ -1,3 +1,4 @@
+//frontend/src/components/dashboard/StatCard.tsx
 'use client'
 
 import { Box, HStack, Icon, Text, VStack } from '@chakra-ui/react'
