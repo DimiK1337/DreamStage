@@ -12,12 +12,17 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
-import { FiBell, FiLogOut, FiPlus, FiSearch } from 'react-icons/fi'
+import { FiBell, FiLogOut, FiSearch } from 'react-icons/fi'
 import { supabase } from '@/lib/supabase/client'
 import { toaster } from '@/components/ui/toaster'
 import { getErrorMessage } from '@/lib/utils/errors'
 
-export function Topbar() {
+export type TopbarProps = {
+  title: string
+  subtitle?: string
+}
+
+export function Topbar({ title, subtitle }: TopbarProps) {
   const router = useRouter()
 
   async function handleLogout() {
@@ -49,15 +54,18 @@ export function Topbar() {
     >
       <Box>
         <Text fontSize="lg" fontWeight="700">
-          Dashboard
+          {title}
         </Text>
-        <Text fontSize="sm" color="whiteAlpha.700">
-          Welcome back, here&apos;s your overview
-        </Text>
+        {subtitle ? (
+          <Text fontSize="sm" color="whiteAlpha.700">
+            {subtitle}
+          </Text>
+        ) : null}
       </Box>
 
       <Spacer />
 
+      {/* Always present: global search */}
       <InputGroup maxW="420px" display={{ base: 'none', md: 'block' }}>
         <>
           <InputElement pointerEvents="none">
@@ -76,15 +84,12 @@ export function Topbar() {
         </>
       </InputGroup>
 
+      {/* Always present: notifications */}
       <Button variant="ghost" borderRadius="14px">
         <Icon as={FiBell} />
       </Button>
 
-      <Button colorScheme="teal" borderRadius="14px">
-        <Icon as={FiPlus} mr={2} />
-        New
-      </Button>
-
+      {/* Always present: logout */}
       <Button
         variant="outline"
         borderRadius="14px"

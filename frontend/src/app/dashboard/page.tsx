@@ -12,7 +12,10 @@ export default function DashboardPage() {
   const data = getMockDashboardData()
 
   return (
-    <AppShell>
+    <AppShell
+      title="Dashboard"
+      subtitle={`Welcome back, here's your overview`}
+    >
       <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={4}>
         {/* KPI row */}
         {data.kpis.map((k) => (
